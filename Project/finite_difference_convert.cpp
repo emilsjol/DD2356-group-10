@@ -34,7 +34,7 @@ vector<vector<float>  > matrix_scalar_multiply(vector<vector<float>  > &matrix, 
 	return temp;
 }
 
-vector<vector<float>  > laplacian(vector<vector<float>  > &ulx, vector<vector<float>  > &uly,
+vector<vector<float>  > create_laplacian(vector<vector<float>  > &ulx, vector<vector<float>  > &uly,
 								vector<vector<float>  > &urx, vector<vector<float>  > &ury, vector<vector<float>  > &u)
 {
 	vector<vector<float>  > u4 = matrix_scalar_multiply(u, -4.0);
@@ -50,7 +50,7 @@ vector<vector<float>  > laplacian(vector<vector<float>  > &ulx, vector<vector<fl
 	return result;
 }
 
-void roll(vector<vector<float>  > &matrix, int shift_rows, int shift_cols)
+vector<vector<float> > roll(vector<vector<float>  > &matrix, int shift_rows, int shift_cols)
 {
 	int rows = matrix.size();
 	int cols = matrix[0].size();
@@ -73,7 +73,7 @@ void roll(vector<vector<float>  > &matrix, int shift_rows, int shift_cols)
 		}
 	}
 
-	matrix = temp;
+	return temp;
 }
 
 vector<vector<float> > create_zero_matrix(int n) 
@@ -103,58 +103,90 @@ int main()
 {
 
 	//start main
-	int n = 256; //resolution
+	int N = 256; //resolution
 	int boxsize = 1;
 	int c = 1;
-	int t = 0;
-	int t_end = 2;
-	int plot_real_time = true;
+	float t = 0;
+	float tEnd = 2;
+	int plotRealTime = true;
 
-	float dx = boxsize / n;
-	float dt = (sqrt(2.0) / 2.0 ) * dx / c;
+	float dx = float(boxsize) / float(N);
+	float dt = (sqrt(2.0) / 2.0 ) * dx / float(c);
+	cout << dt << " ";
 	int aX = 0;
 	int aY = 1;
-	int r = -1;
-	int l = 1;
+	int R = -1;
+	int L = 1;
 	float fac = (dt*dt) * (c*c) / (dx*dx);
 	
-	vector<float> linspace = create_lin_space(0.5*dx, boxsize-(0.5*dx), n);
+	vector<float> xlin = create_lin_space(0.5*dx, boxsize-(0.5*dx), N);
 	//Y, X = ??
 
-	vector<vector<float> > U = create_zero_matrix(n);
+	vector<vector<float> > U = create_zero_matrix(N);
 	//go crazy with masks
-	vector<vector<bool> > mask = create_bool_matrix(n);
+	vector<vector<bool> > mask = create_bool_matrix(N);
 	
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < N; i++) {
 		mask[0][i] = true;
 	}
-	for (int i = 0; i < n; i++) {
-		mask[n-1][i] = true;
+	for (int i = 0; i < N; i++) {
+		mask[N-1][i] = true;
 	}
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < N; i++) {
 		mask[i][0] = true;
 	}
-	for (int i = 0; i < n; i++) {
-		mask[n-1][0] = true;
+	for (int i = 0; i < N; i++) {
+		mask[N-1][0] = true;
 	}
-	for (int i = 0; i < n; i++) {
-		for (int j = int(n/4); j < int(n*9/32); j++) {
+	for (int i = 0; i < N; i++) {
+		for (int j = int(N/4); j < int(N*9/32); j++) {
 			mask[j][i] = true;
 		}
 	}
-	for (int i = int(n*5/16); i < int(n*3/8); i++) {
-		for (int j = 1; j < n; j++) {
+	for (int i = int(N*5/16); i < int(N*3/8); i++) {
+		for (int j = 1; j < N; j++) {
 			mask[j][i] = false;
 		}
 	}
-	for (int i = int(n*5/8); i < int(n*11/16); i++) {
-		for (int j = 1; j < n; j++) {
+	for (int i = int(N*5/8); i < int(N*11/16); i++) {
+		for (int j = 1; j < N; j++) {
 			mask[j][i] = false;
 		}
 	}
 
 	vector<vector<float> > Uprev = matrix_scalar_multiply(U, 1.0);
 
+	//main loop time
+	while (t < tEnd) {
+		vector<vector<float> > ULX = roll(U, L, aX);
+		vector<vector<float> > URX = roll(U, R, aX);
+		vector<vector<float> > ULY = roll(U, L, aY);
+		vector<vector<float> > URY = roll(U, R, aY);
+		vector<vector<float> > laplacian = create_laplacian(ULX, ULY, URX, URY, U);
+		//update U
+		vector<vector<float> > twoU = matrix_scalar_multiply(U, 2.0); //2*U
+		vector<vector<float> > facLaplacian = matrix_scalar_multiply(laplacian, fac);
+		vector<vector<float> > negativeUprev = matrix_scalar_multiply(Uprev, -1.0);
+
+		vector<vector<float> > first_operation = matrix_add(twoU, negativeUprev); //calculate 2*U - Uprev
+		vector<vector<float> > Unew = matrix_add(first_operation, facLaplacian); //calculate 2*U - Uprev + (fac*laplacian)
+		Uprev = matrix_scalar_multiply(U, 1.0);
+		U = matrix_scalar_multiply(Unew, 1.0);	
+		
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (mask[j][i] == true) {
+					U[j][i] = 0.0;
+				}
+			}
+		}
+		
+		for (int i = 0; i < N; i++) {
+			U[0][i] = sin(20*M_PI*t) * (sin(M_PI*xlin[i]) * sin(M_PI*xlin[i]));
+		}
+		cout << t << " ";
+		t += dt;
+	}
 
 
 	vector<std::vector<float>  > test = {
@@ -188,7 +220,7 @@ int main()
 		cout << endl;
 	}
 
-	result = laplacian(test, test, test, test, test);
+	result = create_laplacian(test, test, test, test, test);
 	for (const auto &row : result) 
 	{
 		for (float num : row)
