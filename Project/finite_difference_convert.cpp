@@ -1,6 +1,7 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include <math.h>
 using namespace std;
 
 vector<vector<float>  > matrix_add(vector<vector<float>  > &matrix1, vector<vector<float>  > &matrix2)
@@ -74,8 +75,88 @@ void roll(vector<vector<float>  > &matrix, int shift_rows, int shift_cols)
 
 	matrix = temp;
 }
+
+vector<vector<float> > create_zero_matrix(int n) 
+{
+	vector<vector<float> > zero_matrix(n, vector<float>(n));
+	return zero_matrix;
+}
+
+vector<vector<bool> > create_bool_matrix(int n)
+{
+	vector<vector<bool> > bool_matrix(n, vector<bool>(n));
+	return bool_matrix;
+}
+
+vector<float> create_lin_space(float start, float end, float n)
+{
+	float distance = end - start;
+	float increment = distance / n;
+	vector<float> lin_space(n);
+	for (int i = 0; i < n; i++) {
+		lin_space[i] = start + (increment * i);
+	}
+	return lin_space;
+}
+
 int main()
 {
+
+	//start main
+	int n = 256; //resolution
+	int boxsize = 1;
+	int c = 1;
+	int t = 0;
+	int t_end = 2;
+	int plot_real_time = true;
+
+	float dx = boxsize / n;
+	float dt = (sqrt(2.0) / 2.0 ) * dx / c;
+	int aX = 0;
+	int aY = 1;
+	int r = -1;
+	int l = 1;
+	float fac = (dt*dt) * (c*c) / (dx*dx);
+	
+	vector<float> linspace = create_lin_space(0.5*dx, boxsize-(0.5*dx), n);
+	//Y, X = ??
+
+	vector<vector<float> > U = create_zero_matrix(n);
+	//go crazy with masks
+	vector<vector<bool> > mask = create_bool_matrix(n);
+	
+	for (int i = 0; i < n; i++) {
+		mask[0][i] = true;
+	}
+	for (int i = 0; i < n; i++) {
+		mask[n-1][i] = true;
+	}
+	for (int i = 0; i < n; i++) {
+		mask[i][0] = true;
+	}
+	for (int i = 0; i < n; i++) {
+		mask[n-1][0] = true;
+	}
+	for (int i = 0; i < n; i++) {
+		for (int j = int(n/4); j < int(n*9/32); j++) {
+			mask[j][i] = true;
+		}
+	}
+	for (int i = int(n*5/16); i < int(n*3/8); i++) {
+		for (int j = 1; j < n; j++) {
+			mask[j][i] = false;
+		}
+	}
+	for (int i = int(n*5/8); i < int(n*11/16); i++) {
+		for (int j = 1; j < n; j++) {
+			mask[j][i] = false;
+		}
+	}
+
+	vector<vector<float> > Uprev = matrix_scalar_multiply(U, 1.0);
+
+
+
 	vector<std::vector<float>  > test = {
 		{0, 1, 2},
 		{3, 4, 5},
