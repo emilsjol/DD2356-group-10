@@ -4,11 +4,11 @@
 #include <math.h>
 using namespace std;
 
-vector<vector<float>  > matrix_add(vector<vector<float>  > &matrix1, vector<vector<float>  > &matrix2)
+vector<vector<double>  > matrix_add(vector<vector<double>  > &matrix1, vector<vector<double>  > &matrix2)
 {
 	int rows = matrix1.size();
 	int cols = matrix1[0].size();
-	vector<vector<float>  > temp(rows, vector<float>(cols));
+	vector<vector<double>  > temp(rows, vector<double>(cols));
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
@@ -19,11 +19,11 @@ vector<vector<float>  > matrix_add(vector<vector<float>  > &matrix1, vector<vect
 	return temp;
 }
 
-vector<vector<float>  > matrix_scalar_multiply(vector<vector<float>  > &matrix, float scalar)
+vector<vector<double>  > matrix_scalar_multiply(vector<vector<double>  > &matrix, double scalar)
 {
 	int rows = matrix.size();
 	int cols = matrix[0].size();
-	vector<vector<float>  > temp(rows, vector<float>(cols));
+	vector<vector<double>  > temp(rows, vector<double>(cols));
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
@@ -33,24 +33,24 @@ vector<vector<float>  > matrix_scalar_multiply(vector<vector<float>  > &matrix, 
 	}
 	return temp;
 }
-
-vector<vector<float>  > create_laplacian(vector<vector<float>  > &ulx, vector<vector<float>  > &uly,
-								vector<vector<float>  > &urx, vector<vector<float>  > &ury, vector<vector<float>  > &u)
+		//vector<vector<double> > laplacian = create_laplacian(ULX, ULY, URX, URY, U);
+vector<vector<double>  > create_laplacian(vector<vector<double>  > &ulx, vector<vector<double>  > &uly,
+								vector<vector<double>  > &urx, vector<vector<double>  > &ury, vector<vector<double>  > &u)
 {
-	vector<vector<float>  > u4 = matrix_scalar_multiply(u, -4.0);
+	vector<vector<double>  > u4 = matrix_scalar_multiply(u, -4.0);
 
-	vector<vector<float>  > uX = matrix_add(ulx, urx);
+	vector<vector<double>  > uX = matrix_add(ulx, urx);
 
-	vector<vector<float>  > uY = matrix_add(uly, ury);
+	vector<vector<double>  > uY = matrix_add(uly, ury);
 
-	vector<vector<float>  > uRes = matrix_add(uX, uY);
+	vector<vector<double>  > uRes = matrix_add(uX, uY);
 
-	vector<vector<float>  > result = matrix_add(u4, uRes);
+	vector<vector<double>  > result = matrix_add(u4, uRes);
 
 	return result;
 }
 
-vector<vector<float> > roll(vector<vector<float>  > &matrix, int shift_rows, int shift_cols)
+vector<vector<double> > roll(vector<vector<double>  > &matrix, int shift_rows, int shift_cols)
 {
 	int rows = matrix.size();
 	int cols = matrix[0].size();
@@ -62,7 +62,7 @@ vector<vector<float> > roll(vector<vector<float>  > &matrix, int shift_rows, int
 	shift_cols = (shift_cols % cols + cols) % cols;
 
 	// Temporary matrix to hold rolled elements
-	vector<vector<float>  > temp(rows, vector<float>(cols));
+	vector<vector<double>  > temp(rows, vector<double>(cols));
 
 	// Roll rows
 	for (int i = 0; i < rows; ++i)
@@ -76,9 +76,9 @@ vector<vector<float> > roll(vector<vector<float>  > &matrix, int shift_rows, int
 	return temp;
 }
 
-vector<vector<float> > create_zero_matrix(int n) 
+vector<vector<double> > create_zero_matrix(int n) 
 {
-	vector<vector<float> > zero_matrix(n, vector<float>(n));
+	vector<vector<double> > zero_matrix(n, vector<double>(n));
 	return zero_matrix;
 }
 
@@ -88,15 +88,27 @@ vector<vector<bool> > create_bool_matrix(int n)
 	return bool_matrix;
 }
 
-vector<float> create_lin_space(float start, float end, float n)
+vector<double> create_lin_space(double start, double end, double n)
 {
-	float distance = end - start;
-	float increment = distance / n;
-	vector<float> lin_space(n);
+	double distance = end - start;
+	double increment = distance / (n - 1);
+	vector<double> lin_space(n);
 	for (int i = 0; i < n; i++) {
 		lin_space[i] = start + (increment * i);
 	}
 	return lin_space;
+}
+
+void print_matrix(vector<vector<double> > matrix) {
+	int size = matrix.size();
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
+			cout << matrix[i][j] << " ";
+		}
+		cout << "\n";
+	}
+	cout << "\n------------\n";
+	return;
 }
 
 int main()
@@ -106,23 +118,22 @@ int main()
 	int N = 256; //resolution
 	int boxsize = 1;
 	int c = 1;
-	float t = 0;
-	float tEnd = 2;
+	double t = 0;
+	double tEnd = 2;
 	int plotRealTime = true;
 
-	float dx = float(boxsize) / float(N);
-	float dt = (sqrt(2.0) / 2.0 ) * dx / float(c);
-	cout << dt << " ";
+	double dx = double(boxsize) / double(N);
+	double dt = (sqrt(2.0) / 2.0 ) * dx / double(c);
+
 	int aX = 0;
 	int aY = 1;
 	int R = -1;
 	int L = 1;
-	float fac = (dt*dt) * (c*c) / (dx*dx);
+	double fac = (dt*dt) * (c*c) / (dx*dx);
 	
-	vector<float> xlin = create_lin_space(0.5*dx, boxsize-(0.5*dx), N);
-	//Y, X = ??
+	vector<double> xlin = create_lin_space(0.5*dx, boxsize-(0.5*dx), N);
 
-	vector<vector<float> > U = create_zero_matrix(N);
+	vector<vector<double> > U = create_zero_matrix(N);
 	//go crazy with masks
 	vector<vector<bool> > mask = create_bool_matrix(N);
 	
@@ -136,47 +147,47 @@ int main()
 		mask[i][0] = true;
 	}
 	for (int i = 0; i < N; i++) {
-		mask[N-1][0] = true;
+		mask[i][N-1] = true;
 	}
-	for (int i = 0; i < N; i++) {
-		for (int j = int(N/4); j < int(N*9/32); j++) {
+	for (int i = 0; i < N-1; i++) {
+		for (int j = int(double(N)/4.0); j < int(double(N)*9.0/32.0); j++) {
 			mask[j][i] = true;
 		}
 	}
-	for (int i = int(N*5/16); i < int(N*3/8); i++) {
-		for (int j = 1; j < N; j++) {
+	for (int i = int(double(N)*5.0/16.0); i < int(double(N)*3.0/8.0); i++) {
+		for (int j = 1; j < N-1; j++) {
 			mask[j][i] = false;
 		}
 	}
-	for (int i = int(N*5/8); i < int(N*11/16); i++) {
-		for (int j = 1; j < N; j++) {
+	for (int i = int(double(N)*5.0/8.0); i < int(double(N)*11.0/16.0); i++) {
+		for (int j = 1; j < N-1; j++) {
 			mask[j][i] = false;
 		}
 	}
 
-	vector<vector<float> > Uprev = matrix_scalar_multiply(U, 1.0);
-
+	vector<vector<double> > Uprev = matrix_scalar_multiply(U, 1.0);
 	//main loop time
 	while (t < tEnd) {
-		vector<vector<float> > ULX = roll(U, L, aX);
-		vector<vector<float> > URX = roll(U, R, aX);
-		vector<vector<float> > ULY = roll(U, L, aY);
-		vector<vector<float> > URY = roll(U, R, aY);
-		vector<vector<float> > laplacian = create_laplacian(ULX, ULY, URX, URY, U);
+		
+		vector<vector<double> > ULX = roll(U, L, 0);
+		vector<vector<double> > URX = roll(U, R, 0);
+		vector<vector<double> > ULY = roll(U, 0, L);
+		vector<vector<double> > URY = roll(U, 0, R);
+		vector<vector<double> > laplacian = create_laplacian(ULX, ULY, URX, URY, U);
 		//update U
-		vector<vector<float> > twoU = matrix_scalar_multiply(U, 2.0); //2*U
-		vector<vector<float> > facLaplacian = matrix_scalar_multiply(laplacian, fac);
-		vector<vector<float> > negativeUprev = matrix_scalar_multiply(Uprev, -1.0);
+		vector<vector<double> > twoU = matrix_scalar_multiply(U, 2.0); //2*U
+		vector<vector<double> > facLaplacian = matrix_scalar_multiply(laplacian, fac);
+		vector<vector<double> > negativeUprev = matrix_scalar_multiply(Uprev, -1.0);
 
-		vector<vector<float> > first_operation = matrix_add(twoU, negativeUprev); //calculate 2*U - Uprev
-		vector<vector<float> > Unew = matrix_add(first_operation, facLaplacian); //calculate 2*U - Uprev + (fac*laplacian)
+		vector<vector<double> > first_operation = matrix_add(twoU, negativeUprev); //calculate 2*U - Uprev
+		vector<vector<double> > Unew = matrix_add(first_operation, facLaplacian); //calculate 2*U - Uprev + (fac*laplacian)
 		Uprev = matrix_scalar_multiply(U, 1.0);
 		U = matrix_scalar_multiply(Unew, 1.0);	
 		
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				if (mask[j][i] == true) {
-					U[j][i] = 0.0;
+				if (mask[i][j]) {
+					U[i][j] = 0.0;
 				}
 			}
 		}
@@ -184,50 +195,10 @@ int main()
 		for (int i = 0; i < N; i++) {
 			U[0][i] = sin(20*M_PI*t) * (sin(M_PI*xlin[i]) * sin(M_PI*xlin[i]));
 		}
-		cout << t << " ";
+
 		t += dt;
-	}
+		cout << t << "\n";
 
-
-	vector<std::vector<float>  > test = {
-		{0, 1, 2},
-		{3, 4, 5},
-		{6, 7, 8}};
-	// first arg = 1 shifts vertical 1
-	// first arg = -1 shifts vertical -1
-	// second arg = 1 shifts horizontal 1
-	// second arg = -1 shifts horizontal -1
-	roll(test, 0, 0);
-	vector<vector<float>  > result = matrix_scalar_multiply(test, 10.0);
-
-	for (const auto &row : result)
-	{
-		for (float num : row)
-		{
-			cout << num << " ";
-		}
-		cout << endl;
-	}
-
-	result = matrix_add(test, test);
-
-	for (const auto &row : result)
-	{
-		for (float num : row)
-		{
-			cout << num << " ";
-		}
-		cout << endl;
-	}
-
-	result = create_laplacian(test, test, test, test, test);
-	for (const auto &row : result) 
-	{
-		for (float num : row)
-		{
-			cout << num << " ";
-		}
-		cout << endl;
 	}
 	return 0;
 }
