@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <math.h>
+#include <omp.h>
 using namespace std;
 
 vector<vector<double>  > matrix_add(vector<vector<double>  > &matrix1, vector<vector<double>  > &matrix2)
@@ -9,6 +10,7 @@ vector<vector<double>  > matrix_add(vector<vector<double>  > &matrix1, vector<ve
 	int rows = matrix1.size();
 	int cols = matrix1[0].size();
 	vector<vector<double>  > temp(rows, vector<double>(cols));
+	#pragma omp parallel for
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
@@ -24,6 +26,7 @@ vector<vector<double>  > matrix_scalar_multiply(vector<vector<double>  > &matrix
 	int rows = matrix.size();
 	int cols = matrix[0].size();
 	vector<vector<double>  > temp(rows, vector<double>(cols));
+	#pragma omp parallel for
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
@@ -65,6 +68,7 @@ vector<vector<double> > roll(vector<vector<double>  > &matrix, int shift_rows, i
 	vector<vector<double>  > temp(rows, vector<double>(cols));
 
 	// Roll rows
+	#pragma omp parallel for
 	for (int i = 0; i < rows; ++i)
 	{
 		for (int j = 0; j < cols; ++j)
@@ -93,7 +97,8 @@ vector<double> create_lin_space(double start, double end, double n)
 	double distance = end - start;
 	double increment = distance / (n - 1);
 	vector<double> lin_space(n);
-	for (int i = 0; i < n; i++) {
+	#pragma omp parallel for
+	for (int i = 0; i < (int)(n); i++) { // Casting due to OpenMP Canonical Loop Form or something
 		lin_space[i] = start + (increment * i);
 	}
 	return lin_space;
@@ -184,6 +189,7 @@ int main()
 		Uprev = matrix_scalar_multiply(U, 1.0);
 		U = matrix_scalar_multiply(Unew, 1.0);	
 		
+		#pragma omp parallel for
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				if (mask[i][j]) {
@@ -192,6 +198,7 @@ int main()
 			}
 		}
 		
+		#pragma omp parallel for
 		for (int i = 0; i < N; i++) {
 			U[0][i] = sin(20*M_PI*t) * (sin(M_PI*xlin[i]) * sin(M_PI*xlin[i]));
 		}
