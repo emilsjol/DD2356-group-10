@@ -32,10 +32,49 @@ int main(int argc, char *argv[]){
     
     // need to communicate and fill ghost cells f[0] and f[nxn_loc-1]
     // communicate ghost cells
-    // ...
-    // ...  
 
+    MPI_Status status;
 
+    int next_rank, prev_rank;
+
+    next_rank = (rank + 1) % size;
+    prev_rank = (rank +size - 1) % size;
+
+    if (rank == 0) {
+      //send right
+      MPI_Ssend(&f[nxn_loc-3], 1, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD);
+    }
+    else {
+      //receive left
+      MPI_Recv(&f[0], 1, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD, &status);
+    }
+    if (rank == 0) {
+      //receive left
+      MPI_Recv(&f[0], 1, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD, &status);
+    }
+    else {
+      //send right
+      MPI_Ssend(&f[nxn_loc-3], 1, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD);
+    }
+    
+
+    if (rank == 0) {
+      //receive right
+      MPI_Recv(&f[nxn_loc-1], 1, MPI_DOUBLE, next_rank, 1, MPI_COMM_WORLD, &status);
+    }
+    else {
+      //send left
+      MPI_Ssend(&f[0+2], 1, MPI_DOUBLE, prev_rank, 1, MPI_COMM_WORLD);
+    }
+    if (rank == 0) {
+      //send left
+      MPI_Ssend(&f[0+2], 1, MPI_DOUBLE, prev_rank, 1, MPI_COMM_WORLD);
+    }
+    else {
+      //receive right
+      MPI_Recv(&f[nxn_loc-1], 1, MPI_DOUBLE, next_rank, 1, MPI_COMM_WORLD, &status);
+    }
+    
     // here we finish the calculations
 
     // calculate first order derivative using central difference
@@ -49,7 +88,12 @@ int main(int argc, char *argv[]){
         printf("My rank %d of %d\n", rank, size );
         printf("Here are my values for f including ghost cells\n");
         for (i=0; i<nxn_loc; i++)
-	       printf("%f\n", f[i]);
+          if (i == 0 || i == nxn_loc-1) {
+            printf("%f ghost cell\n", f[i]);
+          }
+          else {
+	          printf("%f\n", f[i]);
+          }
         printf("\n");
     }   
 
