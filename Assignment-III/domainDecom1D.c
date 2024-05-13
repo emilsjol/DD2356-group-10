@@ -40,39 +40,24 @@ int main(int argc, char *argv[]){
     next_rank = (rank + 1) % size;
     prev_rank = (rank +size - 1) % size;
 
-    if (rank == 0) {
+    if (rank % 2 == 0) {
+      //send left
+      MPI_Ssend(&f[2], 1, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD);
       //send right
       MPI_Ssend(&f[nxn_loc-3], 1, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD);
-    }
-    else {
+      //receive right
+      MPI_Recv(&f[nxn_loc-1], 1, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD, &status);
       //receive left
       MPI_Recv(&f[0], 1, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD, &status);
-    }
-    if (rank == 0) {
+    } else {
+      //receive right
+      MPI_Recv(&f[nxn_loc-1], 1, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD, &status);
       //receive left
       MPI_Recv(&f[0], 1, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD, &status);
-    }
-    else {
+      //send left
+      MPI_Ssend(&f[2], 1, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD);
       //send right
       MPI_Ssend(&f[nxn_loc-3], 1, MPI_DOUBLE, next_rank, 0, MPI_COMM_WORLD);
-    }
-    
-
-    if (rank == 0) {
-      //receive right
-      MPI_Recv(&f[nxn_loc-1], 1, MPI_DOUBLE, next_rank, 1, MPI_COMM_WORLD, &status);
-    }
-    else {
-      //send left
-      MPI_Ssend(&f[0+2], 1, MPI_DOUBLE, prev_rank, 1, MPI_COMM_WORLD);
-    }
-    if (rank == 0) {
-      //send left
-      MPI_Ssend(&f[0+2], 1, MPI_DOUBLE, prev_rank, 1, MPI_COMM_WORLD);
-    }
-    else {
-      //receive right
-      MPI_Recv(&f[nxn_loc-1], 1, MPI_DOUBLE, next_rank, 1, MPI_COMM_WORLD, &status);
     }
     
     // here we finish the calculations
