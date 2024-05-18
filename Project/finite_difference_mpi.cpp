@@ -198,31 +198,31 @@ int main(int argc, char* argv[])
 			cout << "Entered rank 1\n";
 			URX = roll(U, R, 0);
 			cout << "Rolled rank 1\n";
-			//MPI_Isend(&URX, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &requests[0]);
-			MPI_Ssend(&URX, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+			MPI_Ssend(&URX[0][0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+			//MPI_Ssend(&URX, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 			cout << "Semt rank 1\n";
 		}
 		if (rank == 2) {
 			cout << "Entered rank 2\n";
 			ULY = roll(U, 0, L);
 			cout << "Rolled rank 2\n";
-			//MPI_Isend(&ULY, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &requests[1]);
-			MPI_Ssend(&ULY, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+			MPI_Ssend(&ULY[0][0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+			//MPI_Ssend(&ULY, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 			cout << "Semt rank 2\n";
 		}
 		if (rank == 3) {
 			cout << "Entered rank 3\n";
 			URY = roll(U, 0, R);
 			cout << "Rolled rank 3\n";
-			//MPI_Isend(&URY, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &requests[2]);
-			MPI_Ssend(&URY, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+			MPI_Ssend(&URY[0][0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+			//MPI_Ssend(&URY, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 			cout << "Semt rank 3\n";
 		}
 		if (rank == 0) {
 			cout << "Entered rank 0 receive\n";
-			MPI_Recv(&blabla, 1, MPI_DOUBLE, 1, 0, MPI_COMM_WORLD, &status);
-			MPI_Recv(&blabla, 1, MPI_DOUBLE, 2, 0, MPI_COMM_WORLD, &status);
-			MPI_Recv(&blabla, 1, MPI_DOUBLE, 3, 0, MPI_COMM_WORLD, &status);
+			MPI_Recv(&URX[0][0], N*N, MPI_DOUBLE, 1, 0, MPI_COMM_WORLD, &status);
+			MPI_Recv(&ULY[0][0], N*N, MPI_DOUBLE, 2, 0, MPI_COMM_WORLD, &status);
+			MPI_Recv(&URY[0][0], N*N, MPI_DOUBLE, 3, 0, MPI_COMM_WORLD, &status);
 			cout << "Exited rank 0 receive\n";
 		}
 		/*
