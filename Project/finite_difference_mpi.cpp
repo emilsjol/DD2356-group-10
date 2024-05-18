@@ -114,6 +114,26 @@ void print_matrix(vector<vector<double> > matrix) {
 	return;
 }
 
+vector<double> flatten(vector<vector<double> > matrix) {
+    vector<double> flat;
+    for (int i = 0; i < matrix.size(); ++i) {
+        for (int j = 0; j < matrix[i].size(); ++j) {
+            flat.push_back(matrix[i][j]);
+        }
+    }
+    return flat;
+}
+
+vector<vector<double> > unflatten(vector<double> flat, int rows, int cols) {
+    vector<vector<double> > matrix(rows, vector<double>(cols));
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            matrix[i][j] = flat[i * cols + j];
+        }
+    }
+    return matrix;
+}
+
 int main(int argc, char* argv[])
 {
 	int size, rank;
@@ -123,7 +143,7 @@ int main(int argc, char* argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 	//start main
-	int N = 256; //resolution
+	int N = 16; //resolution
 	int boxsize = 1;
 	int c = 1;
 	double t = 0;
@@ -186,56 +206,54 @@ int main(int argc, char* argv[])
 	vector<vector<double> > URX = vector<vector<double> > (N, vector<double>(N));
 	vector<vector<double> > ULY = vector<vector<double> > (N, vector<double>(N));
 	vector<vector<double> > URY = vector<vector<double> > (N, vector<double>(N));
-	
+	int counter = 0;
+	//double[][];
 	while (t < tEnd) {
-
+		counter++;
 		if (rank == 0) {
-			cout << "Entered rank 0\n";
 			ULX = roll(U, L, 0);
-			cout << "Rolled rank 0\n";
 		}
 		if (rank == 1) {
-			cout << "Entered rank 1\n";
 			URX = roll(U, R, 0);
-			cout << "Rolled rank 1\n";
-			MPI_Ssend(&URX[0][0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-			//MPI_Ssend(&URX, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-			cout << "Semt rank 1\n";
+			vector<double> URX_flat = flatten(URX);
+			//for (int i = 0; i < N; i++) {
+				MPI_Ssend(&URX_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+				//MPI_Ssend(&URX[i][0], N, MPI_DOUBLE, 0, i, MPI_COMM_WORLD);
+			//}
 		}
 		if (rank == 2) {
-			cout << "Entered rank 2\n";
 			ULY = roll(U, 0, L);
-			cout << "Rolled rank 2\n";
-			MPI_Ssend(&ULY[0][0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-			//MPI_Ssend(&ULY, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-			cout << "Semt rank 2\n";
+			vector<double> ULY_flat = flatten(ULY);
+			//for (int i = 0; i < N; i++) {
+				MPI_Ssend(&ULY_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+				//MPI_Ssend(&URX[i][0], N, MPI_DOUBLE, 0, i, MPI_COMM_WORLD);
+			//}
 		}
 		if (rank == 3) {
-			cout << "Entered rank 3\n";
 			URY = roll(U, 0, R);
-			cout << "Rolled rank 3\n";
-			MPI_Ssend(&URY[0][0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-			//MPI_Ssend(&URY, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-			cout << "Semt rank 3\n";
+			vector<double> URY_flat = flatten(URY);
+				MPI_Ssend(&URY_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 		}
 		if (rank == 0) {
-			cout << "Entered rank 0 receive\n";
-			MPI_Recv(&URX[0][0], N*N, MPI_DOUBLE, 1, 0, MPI_COMM_WORLD, &status);
-			MPI_Recv(&ULY[0][0], N*N, MPI_DOUBLE, 2, 0, MPI_COMM_WORLD, &status);
-			MPI_Recv(&URY[0][0], N*N, MPI_DOUBLE, 3, 0, MPI_COMM_WORLD, &status);
-			cout << "Exited rank 0 receive\n";
+			for (int i = 0; i < N; i++) {
+				vector<double> URX_flat_recv = vector<double>(N*N);
+				vector<double> ULY_flat_recv = vector<double>(N*N);
+				vector<double> URY_flat_recv = vector<double>(N*N);
+				MPI_Recv(&URX_flat_recv[0], N*N, MPI_DOUBLE, 1, 0, MPI_COMM_WORLD, &status);
+				MPI_Recv(&ULY_flat_recv[0], N*N, MPI_DOUBLE, 2, 0, MPI_COMM_WORLD, &status);
+				MPI_Recv(&URY_flat_recv[0], N*N, MPI_DOUBLE, 3, 0, MPI_COMM_WORLD, &status);
+				URX = unflatten(URX_flat_recv, N, N);
+				ULY = unflatten(ULY_flat_recv, N, N);
+				URY = unflatten(URY_flat_recv, N, N);
+			}
 		}
-		/*
-		if (rank == 0) {
-			cout << "Entered rank 0 receive\n";
-			MPI_Irecv(&URX, 1, MPI_DOUBLE, 1, 0, MPI_COMM_WORLD, &requests[0]);
-			MPI_Irecv(&ULY, 1, MPI_DOUBLE, 2, 0, MPI_COMM_WORLD, &requests[1]);
-			MPI_Irecv(&URY, 1, MPI_DOUBLE, 3, 0, MPI_COMM_WORLD, &requests[2]);
+		print_matrix(URY);
+		if (rank == 0 && counter == 2) {
+			print_matrix(URY);
 		}
-		*/
-		//wait here for above matrices
-		//MPI_Waitall(6, requests, statuses);
-		cout << "BANANAS: " << rank << "\n";
+		if (counter == 10) {
+			return 0;
+		}
 		//börja parallelblock här
 		vector<vector<double> > laplacian = create_laplacian(ULX, ULY, URX, URY, U);
 		vector<vector<double> > twoU = matrix_scalar_multiply(U, 2.0); //2*U
