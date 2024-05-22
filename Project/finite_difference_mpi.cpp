@@ -103,7 +103,8 @@ vector<double> create_lin_space(double start, double end, double n)
 }
 
 void print_matrix(vector<vector<double> > matrix, int rank) {
-	if (rank == 0) {
+	cout << "Printing matrix\n";
+	//if (rank == 0) {
 		int size = matrix.size();
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -112,32 +113,30 @@ void print_matrix(vector<vector<double> > matrix, int rank) {
 			cout << "\n";
 		}
 		cout << "\n------------\n";
-	}
+	//}
 	return;
 }
 
 void print_vector(vector<double> v, int rank) {
-	if (rank == 0) {
+	cout << "Printing vector\n";
+	//if (rank == 0) {
 		int size = v.size();
 		for (int i = 0; i < size; i++) {
 			cout << v[i] << " ";
 		}
 		cout << "\n------------\n";
-	}
+	//}
 	return;
 }
 
 vector<double> flatten(vector<vector<double> > matrix) {
+	int cols = matrix[0].size();
     vector<double> flat = vector<double>(matrix.size() * matrix.size());
     for (int i = 0; i < matrix.size(); i++) {
         for (int j = 0; j < matrix[i].size(); j++) {
-            flat.push_back(matrix[i][j]);
+            flat[i * cols + j] = matrix[i][j];
         }
     }
-	int rank = -1;
-	//MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	//print_vector(flat, rank);
-	//print_matrix(matrix, rank);
     return flat;
 }
 
@@ -256,7 +255,7 @@ int main(int argc, char* argv[])
 				MPI_Ssend(&URY_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 		}
 		if (rank == 0) {
-			for (int i = 0; i < N; i++) {
+			//for (int i = 0; i < N; i++) {
 				vector<double> URX_flat_recv = vector<double>(N*N);
 				vector<double> ULY_flat_recv = vector<double>(N*N);
 				vector<double> URY_flat_recv = vector<double>(N*N);
@@ -266,7 +265,7 @@ int main(int argc, char* argv[])
 				URX = unflatten(URX_flat_recv, N, N);
 				ULY = unflatten(ULY_flat_recv, N, N);
 				URY = unflatten(URY_flat_recv, N, N);
-			}
+			//}
 		}
 
 
@@ -297,8 +296,24 @@ int main(int argc, char* argv[])
 			U[0][i] = sin(20*M_PI*t) * (sin(M_PI*xlin[i]) * sin(M_PI*xlin[i]));
 		}
 
+		if (rank == 0) {
+			//for (int i = 0; i < N; i++) {
+				vector<double> U_flat = flatten(U);
+				for(int i = 1; i < size; i++) {
+					MPI_Ssend(&U_flat[0], N*N, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+				}
+		} else {
+			vector<double> U_flat_recv = vector<double>(N*N);
+			MPI_Recv(&U_flat_recv[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+			U = unflatten(U_flat_recv, N, N);
+		}
+
 		t += dt;
-		//cout << t << "\n";
+
+		if(rank == 0) {
+			cout << t << "\n";
+			print_matrix(U, 0);
+		}
 
 	}
 	return 0;
