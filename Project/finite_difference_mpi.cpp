@@ -102,32 +102,49 @@ vector<double> create_lin_space(double start, double end, double n)
 	return lin_space;
 }
 
-void print_matrix(vector<vector<double> > matrix) {
-	int size = matrix.size();
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			cout << matrix[i][j] << " ";
+void print_matrix(vector<vector<double> > matrix, int rank) {
+	if (rank == 0) {
+		int size = matrix.size();
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				cout << matrix[i][j] << " ";
+			}
+			cout << "\n";
 		}
-		cout << "\n";
+		cout << "\n------------\n";
 	}
-	cout << "\n------------\n";
+	return;
+}
+
+void print_vector(vector<double> v, int rank) {
+	if (rank == 0) {
+		int size = v.size();
+		for (int i = 0; i < size; i++) {
+			cout << v[i] << " ";
+		}
+		cout << "\n------------\n";
+	}
 	return;
 }
 
 vector<double> flatten(vector<vector<double> > matrix) {
-    vector<double> flat;
-    for (int i = 0; i < matrix.size(); ++i) {
-        for (int j = 0; j < matrix[i].size(); ++j) {
+    vector<double> flat = vector<double>(matrix.size() * matrix.size());
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[i].size(); j++) {
             flat.push_back(matrix[i][j]);
         }
     }
+	int rank = -1;
+	//MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	//print_vector(flat, rank);
+	//print_matrix(matrix, rank);
     return flat;
 }
 
 vector<vector<double> > unflatten(vector<double> flat, int rows, int cols) {
     vector<vector<double> > matrix(rows, vector<double>(cols));
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
             matrix[i][j] = flat[i * cols + j];
         }
     }
@@ -143,7 +160,7 @@ int main(int argc, char* argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 	//start main
-	int N = 16; //resolution
+	int N = 8; //resolution
 	int boxsize = 1;
 	int c = 1;
 	double t = 0;
@@ -206,6 +223,10 @@ int main(int argc, char* argv[])
 	vector<vector<double> > URX = vector<vector<double> > (N, vector<double>(N));
 	vector<vector<double> > ULY = vector<vector<double> > (N, vector<double>(N));
 	vector<vector<double> > URY = vector<vector<double> > (N, vector<double>(N));
+	vector<double> ULX_flat = vector<double>(N*N); //not needed
+	vector<double> URX_flat = vector<double>(N*N);
+	vector<double> ULY_flat = vector<double>(N*N);
+	vector<double> URY_flat = vector<double>(N*N);
 	int counter = 0;
 	//double[][];
 	while (t < tEnd) {
@@ -215,7 +236,7 @@ int main(int argc, char* argv[])
 		}
 		if (rank == 1) {
 			URX = roll(U, R, 0);
-			vector<double> URX_flat = flatten(URX);
+			URX_flat = flatten(URX);
 			//for (int i = 0; i < N; i++) {
 				MPI_Ssend(&URX_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 				//MPI_Ssend(&URX[i][0], N, MPI_DOUBLE, 0, i, MPI_COMM_WORLD);
@@ -223,7 +244,7 @@ int main(int argc, char* argv[])
 		}
 		if (rank == 2) {
 			ULY = roll(U, 0, L);
-			vector<double> ULY_flat = flatten(ULY);
+			ULY_flat = flatten(ULY);
 			//for (int i = 0; i < N; i++) {
 				MPI_Ssend(&ULY_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 				//MPI_Ssend(&URX[i][0], N, MPI_DOUBLE, 0, i, MPI_COMM_WORLD);
@@ -231,7 +252,7 @@ int main(int argc, char* argv[])
 		}
 		if (rank == 3) {
 			URY = roll(U, 0, R);
-			vector<double> URY_flat = flatten(URY);
+			URY_flat = flatten(URY);
 				MPI_Ssend(&URY_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 		}
 		if (rank == 0) {
@@ -247,13 +268,9 @@ int main(int argc, char* argv[])
 				URY = unflatten(URY_flat_recv, N, N);
 			}
 		}
-		print_matrix(URY);
-		if (rank == 0 && counter == 2) {
-			print_matrix(URY);
-		}
-		if (counter == 10) {
-			return 0;
-		}
+
+
+
 		//börja parallelblock här
 		vector<vector<double> > laplacian = create_laplacian(ULX, ULY, URX, URY, U);
 		vector<vector<double> > twoU = matrix_scalar_multiply(U, 2.0); //2*U
@@ -281,7 +298,7 @@ int main(int argc, char* argv[])
 		}
 
 		t += dt;
-		cout << t << "\n";
+		//cout << t << "\n";
 
 	}
 	return 0;
