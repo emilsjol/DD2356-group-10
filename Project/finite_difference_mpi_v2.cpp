@@ -60,14 +60,85 @@ int index_from_two(int i, int j, int cols) {
     return ((i * cols) + j);
 }
 
-vector<double> roll(vector<double> &matrix, int shift_rows, int shift_cols, int rows, int cols)
+vector<double> rollus(vector<double> &matrix, int shift_rows, int shift_cols, int rows, int cols, int rank)
 {
     int length = matrix.size();
+    int per_rank = length / num_processes;
+
 	// Calculate effective row shift within range [0, rows)
-	shift_rows = (shift_rows % rows + rows) % rows;
+	shift_rows = (shift_rows + rows) % rows;
 
 	// Calculate effective column shift within range [0, cols)
 	shift_cols = (shift_cols % cols + cols) % cols;
+
+	// Temporary matrix to hold rolled elements
+    if(shift_rows == 1) {
+        vector<double> matrix_recv(per_rank + (shift_rows*(cols)));
+        MPI_Scatter(&matrix[0], per_rank, MPI_DOUBLE, &matrix_recv[cols], per_rank, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        if(rank == 0) 
+        {
+            for(int i = 1; i < num_processes; i++) 
+            {
+                MPI_Ssend(&matrix[(i * per_rank) - cols], cols, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+            }
+            for(int i = 0; i < cols; i++) {
+                matrix_recv[i] = matrix[(num_processes * per_rank) - cols + i];
+            }
+        } 
+        else
+        {
+            MPI_Status status;
+            MPI_Recv(&matrix_recv[0], cols, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+        }
+        vector<double> temp_recv(rows*cols);
+        MPI_Gather(&matrix_recv[0], per_rank, MPI_DOUBLE, &temp_recv[0], per_rank, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        return temp_recv;
+    }
+
+    if(shift_rows == -1) {
+        vector<double> matrix_recv(per_rank + (shift_rows*(cols)));
+        MPI_Scatter(&matrix[0], per_rank, MPI_DOUBLE, &matrix_recv[0], per_rank, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        if(rank == 0) 
+        {
+            for(int i = 1; i < num_processes; i++) 
+            {
+                MPI_Ssend(&matrix[(((i+1) % num_processes) * per_rank)], cols, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+            }
+            for(int i = 0; i < cols; i++) {
+                matrix_recv[i] = matrix[per_rank + i];
+            }
+        } 
+        else
+        {
+            MPI_Status status;
+            MPI_Recv(&matrix_recv[per_rank], cols, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+        }
+        vector<double> temp_recv(rows*cols);
+        MPI_Gather(&matrix_recv[cols], per_rank, MPI_DOUBLE, &temp_recv[0], per_rank, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        return temp_recv;
+    }
+	
+    vector<double> temp(rows*cols);
+	// Roll rows
+	for (int i = 0; i < length; ++i)
+	{
+        //temp[(i + shift_rows) % rows][(j + shift_cols) % cols] = matrix[i][j];
+        //temp[indexFromTwo((i + shift_rows) % rows, (j + shift_cols) % cols, cols)] = matrix[i];
+        temp[((((i / cols) + shift_rows) % rows) * cols) + (((i % cols) + shift_cols) % cols)] = matrix[i];
+	}
+
+	return temp;
+}
+
+vector<double> roll(vector<double> &matrix, int shift_rows, int shift_cols, int rows, int cols)
+{
+    int length = matrix.size();
+
+	// Calculate effective row shift within range [0, rows)
+	shift_rows = (shift_rows + rows) % rows;
+
+	// Calculate effective column shift within range [0, cols)
+	shift_cols = (shift_cols + cols) % cols;
 
 	// Temporary matrix to hold rolled elements
 	vector<double> temp(length);
@@ -207,7 +278,7 @@ int main(int argc, char* argv[])
 	int counter = 0;
 	while (t < tEnd) {
 		counter++;
-		if (rank == 0) {
+		/*if (rank == 0) {
 			ULX = roll(U, L, 0, N, N);
 		}
 		if (rank == 1) {
@@ -226,7 +297,12 @@ int main(int argc, char* argv[])
             MPI_Recv(&URX[0], N*N, MPI_DOUBLE, 1, 0, MPI_COMM_WORLD, &status);
             MPI_Recv(&ULY[0], N*N, MPI_DOUBLE, 2, 0, MPI_COMM_WORLD, &status);
             MPI_Recv(&URY[0], N*N, MPI_DOUBLE, 3, 0, MPI_COMM_WORLD, &status);
-		}
+		}*/
+
+        ULX = rollus(U, L, 0, N, N, rank);
+        URX = rollus(U, R, 0, N, N, rank);
+        ULY = rollus(U, 0, L, N, N, rank);
+        URY = rollus(U, 0, R, N, N, rank);
 
 		//börja parallelblock här
 		vector<double> laplacian = create_laplacian(ULX, ULY, URX, URY, U);
@@ -254,13 +330,7 @@ int main(int argc, char* argv[])
 			U[index_from_two(0, i, N)] = sin(20*M_PI*t) * (sin(M_PI*xlin[i]) * sin(M_PI*xlin[i]));
 		}
 
-		if (rank == 0) {
-				for(int i = 1; i < size; i++) {
-					MPI_Ssend(&U[0], N*N, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-				}
-		} else {
-			MPI_Recv(&U[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
-		}
+        MPI_Bcast(&U[0], N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
 		t += dt;
 		if(rank == 0) {
