@@ -299,31 +299,21 @@ int main(int argc, char* argv[])
 		vector<double> first_operation = matrix_add(twoU, negativeUprev); //calculate 2*U - Uprev
 		vector<double> Unew = matrix_add(first_operation, facLaplacian); //calculate 2*U - Uprev + (fac*laplacian)
 		Uprev = matrix_scalar_multiply(U, 1.0);
-		U = matrix_scalar_multiply(Unew, 1.0);	
-		
-        /*vector<double> U_recv(N*N);
+		U = matrix_scalar_multiply(Unew, 1.0);
 
-        MPI_Scatter(&U[0], N*N / size, MPI_DOUBLE, &U_recv[0], N*N / size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        //MPI_Scatter(&mask[0], N*N / size, MPI_CXX_BOOL, &mask_recv[0], N*N / size, MPI_CXX_BOOL, 0, MPI_COMM_WORLD);
-        for (int i = 0; i < N*N / size; i++) {
-            if (mask[i]) {
+        int per_rank = N*N/size;	
+		
+        vector<double> U_recv(per_rank);
+
+        MPI_Scatter(&U[0], per_rank, MPI_DOUBLE, &U_recv[0], per_rank, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        for (int i = 0; i < per_rank; i++) {
+            if (mask[(rank * (per_rank)) + i]) {
                 U_recv[i] = 0.0;
             }
         }
-        MPI_Gather(&U_recv[0], N*N / size, MPI_DOUBLE, &U[0], N*N / size, MPI_DOUBLE, 0, MPI_COMM_WORLD);*/
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (mask[index_from_two(i, j, N)]) {
-                    U[index_from_two(i, j, N)] = 0.0;
-                }
-            }
-        }
-
-
-
+        MPI_Gather(&U_recv[0], per_rank, MPI_DOUBLE, &U[0], per_rank, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 		
-		//parallelisera potentiellt? vi kan kolla prestanda kanske
+        // Left as an exercise to the reader
 		for (int i = 0; i < N; i++) {
 			U[index_from_two(0, i, N)] = sin(20*M_PI*t) * (sin(M_PI*xlin[i]) * sin(M_PI*xlin[i]));
 		}
@@ -342,23 +332,7 @@ int main(int argc, char* argv[])
         print_matrix(U, N);
     }
     
-    /*int num = 8;
-    vector<double> test(num*num);
-    for(int i = 0; i < num*num; i++) {
-        test[i] = (double)i;
-    }
-
-    vector<double> test2 = rollus(test, 0, 1, num, num, rank);
-*/
-    /*if(rank == 0) 
-    {
-        print_matrix(test, num);
-        print_matrix(roll(test, 0, 1, num, num), num);
-        print_matrix(test2, num);
-    }*/
-
     MPI_Finalize();
-
 
 	return 0;
 }
