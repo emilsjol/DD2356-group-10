@@ -6,26 +6,38 @@
 #include <mpi.h>
 using namespace std;
 
+int num_processes = 0;
+
 vector<double> matrix_add(vector<double> &matrix1, vector<double> &matrix2)
 {
 	int length = matrix1.size();
+    vector<double> matrix1_recv(length / num_processes);
+    MPI_Scatter(&matrix1[0], length / num_processes, MPI_DOUBLE, &matrix1_recv[0], length / num_processes, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    vector<double> matrix2_recv(length / num_processes);
+    MPI_Scatter(&matrix2[0], length / num_processes, MPI_DOUBLE, &matrix2_recv[0], length / num_processes, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	vector<double> temp(length);
 	for (int i = 0; i < length; i++)
 	{
-        temp[i] = matrix1[i] + matrix2[i];
+        temp[i] = matrix1_recv[i] + matrix2_recv[i];
 	}
-	return temp;
+    vector<double> temp_recv(length); 
+    MPI_Gather(&temp[0], length / num_processes, MPI_DOUBLE, &temp_recv[0], length / num_processes, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	return temp_recv;
 }
 
 vector<double> matrix_scalar_multiply(vector<double> &matrix, double scalar)
 {
-    int length = matrix.size();
+    vector<double> matrix_recv(matrix.size() / num_processes);
+    MPI_Scatter(&matrix[0], matrix.size() / num_processes, MPI_DOUBLE, &matrix_recv[0], matrix.size() / num_processes, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    int length = matrix_recv.size();
 	vector<double> temp(length);
 	for (int i = 0; i < length; i++)
 	{
-        temp[i] = matrix[i] * scalar;
+        temp[i] = matrix_recv[i] * scalar;
 	}
-	return temp;
+    vector<double> temp_recv(matrix.size()); 
+    MPI_Gather(&temp[0], matrix.size() / num_processes, MPI_DOUBLE, &temp_recv[0], matrix.size() / num_processes, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	return temp_recv;
 }
 
 vector<double> create_laplacian(vector<double> &ulx, vector<double> &uly,
@@ -126,6 +138,8 @@ int main(int argc, char* argv[])
 	MPI_Init_thread(&argc, &argv, MPI_THREAD_SINGLE, &provided);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    num_processes = size;
 
 	//start main
 	int N = 8; //resolution
@@ -251,10 +265,12 @@ int main(int argc, char* argv[])
 		t += dt;
 		if(rank == 0) {
 			cout << t << "\n";
-			//print_matrix(U, N);
+			print_matrix(U, N);
 		}
 
 	}
+
+    MPI_Finalize();
 
     /*if(rank == 0) 
     {
