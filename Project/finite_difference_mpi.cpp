@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <math.h>
-#include <omp.h>
+// #include <omp.h>
 #include <mpi.h>
 using namespace std;
 
@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 	//start main
-	int N = 8; //resolution
+	int N = 256; //resolution
 	int boxsize = 1;
 	int c = 1;
 	double t = 0;
@@ -312,9 +312,10 @@ int main(int argc, char* argv[])
 
 		if(rank == 0) {
 			cout << t << "\n";
-			print_matrix(U, 0);
+			// print_matrix(U, 0);
 		}
 
 	}
+	MPI_Finalize();
 	return 0;
 }
