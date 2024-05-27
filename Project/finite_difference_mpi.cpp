@@ -35,7 +35,7 @@ vector<vector<double>  > matrix_scalar_multiply(vector<vector<double>  > &matrix
 	}
 	return temp;
 }
-		//vector<vector<double> > laplacian = create_laplacian(ULX, ULY, URX, URY, U);
+
 vector<vector<double>  > create_laplacian(vector<vector<double>  > &ulx, vector<vector<double>  > &uly,
 								vector<vector<double>  > &urx, vector<vector<double>  > &ury, vector<vector<double>  > &u)
 {
@@ -67,7 +67,6 @@ vector<vector<double> > roll(vector<vector<double>  > &matrix, int shift_rows, i
 	vector<vector<double>  > temp(rows, vector<double>(cols));
 
 	// Roll rows
-	#pragma omp parallel for
 	for (int i = 0; i < rows; ++i)
 	{
 		for (int j = 0; j < cols; ++j)
@@ -102,9 +101,8 @@ vector<double> create_lin_space(double start, double end, double n)
 	return lin_space;
 }
 
-void print_matrix(vector<vector<double> > matrix, int rank) {
+void print_matrix(vector<vector<double> > matrix) {
 	cout << "Printing matrix\n";
-	//if (rank == 0) {
 		int size = matrix.size();
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -113,19 +111,16 @@ void print_matrix(vector<vector<double> > matrix, int rank) {
 			cout << "\n";
 		}
 		cout << "\n------------\n";
-	//}
 	return;
 }
 
-void print_vector(vector<double> v, int rank) {
+void print_vector(vector<double> v) {
 	cout << "Printing vector\n";
-	//if (rank == 0) {
 		int size = v.size();
 		for (int i = 0; i < size; i++) {
 			cout << v[i] << " ";
 		}
 		cout << "\n------------\n";
-	//}
 	return;
 }
 
@@ -212,7 +207,6 @@ int main(int argc, char* argv[])
 	vector<vector<double> > Uprev = matrix_scalar_multiply(U, 1.0);
 
 	//main loop time
-	//MPI_Recv(&f[0], 1, MPI_DOUBLE, prev_rank, 0, MPI_COMM_WORLD, &status);
 	MPI_Request * requests = new MPI_Request[size - 1];
 	MPI_Request request;
 	MPI_Status status;
@@ -227,7 +221,6 @@ int main(int argc, char* argv[])
 	vector<double> ULY_flat = vector<double>(N*N);
 	vector<double> URY_flat = vector<double>(N*N);
 	int counter = 0;
-	//double[][];
 	while (t < tEnd) {
 		counter++;
 		if (rank == 0) {
@@ -236,26 +229,19 @@ int main(int argc, char* argv[])
 		if (rank == 1) {
 			URX = roll(U, R, 0);
 			URX_flat = flatten(URX);
-			//for (int i = 0; i < N; i++) {
-				MPI_Ssend(&URX_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-				//MPI_Ssend(&URX[i][0], N, MPI_DOUBLE, 0, i, MPI_COMM_WORLD);
-			//}
+			MPI_Ssend(&URX_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 		}
 		if (rank == 2) {
 			ULY = roll(U, 0, L);
 			ULY_flat = flatten(ULY);
-			//for (int i = 0; i < N; i++) {
-				MPI_Ssend(&ULY_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-				//MPI_Ssend(&URX[i][0], N, MPI_DOUBLE, 0, i, MPI_COMM_WORLD);
-			//}
+			MPI_Ssend(&ULY_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 		}
 		if (rank == 3) {
 			URY = roll(U, 0, R);
 			URY_flat = flatten(URY);
-				MPI_Ssend(&URY_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+			MPI_Ssend(&URY_flat[0], N*N, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 		}
 		if (rank == 0) {
-			//for (int i = 0; i < N; i++) {
 				vector<double> URX_flat_recv = vector<double>(N*N);
 				vector<double> ULY_flat_recv = vector<double>(N*N);
 				vector<double> URY_flat_recv = vector<double>(N*N);
@@ -265,10 +251,7 @@ int main(int argc, char* argv[])
 				URX = unflatten(URX_flat_recv, N, N);
 				ULY = unflatten(ULY_flat_recv, N, N);
 				URY = unflatten(URY_flat_recv, N, N);
-			//}
 		}
-
-
 
 		//börja parallelblock här
 		vector<vector<double> > laplacian = create_laplacian(ULX, ULY, URX, URY, U);
@@ -297,7 +280,6 @@ int main(int argc, char* argv[])
 		}
 
 		if (rank == 0) {
-			//for (int i = 0; i < N; i++) {
 				vector<double> U_flat = flatten(U);
 				for(int i = 1; i < size; i++) {
 					MPI_Ssend(&U_flat[0], N*N, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
@@ -309,10 +291,9 @@ int main(int argc, char* argv[])
 		}
 
 		t += dt;
-
 		if(rank == 0) {
 			cout << t << "\n";
-			// print_matrix(U, 0);
+			//print_matrix(U, 0);
 		}
 
 	}
