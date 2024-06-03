@@ -8,6 +8,18 @@ using namespace std;
 
 int num_processes = 0;
 
+/**
+ * @brief Adds two distributed vectors element-wise using MPI.
+ *
+ * This function takes two distributed vectors of the same length and returns a new vectors where each element
+ * is the sum of the corresponding elements in the input vectors. The computation is distributed across MPI processes.
+ *
+ * @param matrix1 The first input vectors.
+ * @param matrix2 The second input vectors.
+ * @return A vector containing the element-wise sums of the input vectors, gathered in the root process.
+ *
+ * @note The number of elements in each vector must be divisible by the number of MPI processes.
+ */
 vector<double> matrix_add(vector<double> &matrix1, vector<double> &matrix2)
 {
 	int length = matrix1.size();
@@ -25,6 +37,19 @@ vector<double> matrix_add(vector<double> &matrix1, vector<double> &matrix2)
 	return temp_recv;
 }
 
+/**
+ * @brief Multiplies each element of a distributed vector by a scalar using MPI.
+ *
+ * This function takes a distributed vector and a scalar value, and returns a new vector where each element
+ * is the product of the corresponding element in the input vector and the scalar. The computation is distributed
+ * across MPI processes.
+ *
+ * @param matrix The input vector.
+ * @param scalar The scalar value to multiply each element of the vector by.
+ * @return A vector containing the products of the elements of the input matrix and the scalar, gathered in the root process.
+ *
+ * @note The number of elements in the vectors must be divisible by the number of MPI processes.
+ */
 vector<double> matrix_scalar_multiply(vector<double> &matrix, double scalar)
 {
     vector<double> matrix_recv(matrix.size() / num_processes);
@@ -40,6 +65,20 @@ vector<double> matrix_scalar_multiply(vector<double> &matrix, double scalar)
 	return temp_recv;
 }
 
+/**
+ * @brief Creates a Laplacian vector from given vectors.
+ *
+ * This function generates a Laplacian vector using five input vectors by performing
+ * a series of vector additions and scalar multiplications.
+ *
+ * @param ulx The upper left X-component vector.
+ * @param uly The upper left Y-component vector.
+ * @param urx The upper right X-component vector.
+ * @param ury The upper right Y-component vector.
+ * @param u The central vector.
+ * @return A vector representing the Laplacian of the input vectors.
+ *
+ */
 vector<double> create_laplacian(vector<double> &ulx, vector<double> &uly,
 								vector<double> &urx, vector<double> &ury, vector<double> &u)
 {
@@ -56,10 +95,39 @@ vector<double> create_laplacian(vector<double> &ulx, vector<double> &uly,
 	return result;
 }
 
+/**
+ * @brief Computes the linear index from row and column indices in a matrix.
+ *
+ * This function calculates the linear index corresponding to a given row and column index in a matrix
+ * with the specified number of columns.
+ *
+ * @param i The row index.
+ * @param j The column index.
+ * @param cols The number of columns in the matrix.
+ * @return The linear index corresponding to the given row and column indices.
+ *
+ * @note This function assumes that the input row and column indices are within the bounds of the matrix.
+ */
 int index_from_two(int i, int j, int cols) {
     return ((i * cols) + j);
 }
 
+/**
+ * @brief Rolls the elements of a distributed matrix using MPI by specified row and column shifts.
+ *
+ * This function shifts the elements of a distributed matrix cyclically by the specified number of rows and columns
+ * using MPI for communication. The function handles ghost rows or columns as necessary for the rolling operation.
+ *
+ * @param matrix The input matrix to be rolled.
+ * @param shift_rows The number of rows to shift the matrix elements.
+ * @param shift_cols The number of columns to shift the matrix elements.
+ * @param rows The total number of rows in the matrix.
+ * @param cols The total number of columns in the matrix.
+ * @param rank The rank of the current MPI process.
+ * @return A matrix with elements rolled by the specified row and column shifts, gathered in the root process.
+ *
+ * @note The number of elements in the matrix must be divisible by the number of MPI processes.
+ */
 vector<double> roll(vector<double> &matrix, int shift_rows, int shift_cols, int rows, int cols, int rank)
 {
     int length = matrix.size();
@@ -166,18 +234,49 @@ vector<double> roll(vector<double> &matrix, int shift_rows, int shift_cols, int 
     
 }
 
+/**
+ * @brief Creates a zero-filled vector representing a square matrix.
+ *
+ * This function generates a vector of length \( n \times n \) representing a square matrix
+ * where all elements are initialized to zero.
+ *
+ * @param n The size of the square matrix (number of rows and columns).
+ * @return A vector representing a square matrix of size \( n \times n \) filled with zeros.
+ *
+ */
 vector<double> create_zero_matrix(int n) 
 {
 	vector<double> zero_matrix(n*n);
 	return zero_matrix;
 }
 
+/**
+ * @brief Creates a boolean vector representing a square matrix.
+ *
+ * This function generates a vector of length \( n \times n \) representing a square matrix
+ * where all elements are initialized to false.
+ *
+ * @param n The size of the square matrix (number of rows and columns).
+ * @return A vector representing a square matrix of size \( n \times n \) filled with false values.
+ *
+ */
 vector<bool> create_bool_matrix(int n)
 {
 	vector<bool> bool_matrix(n*n);
 	return bool_matrix;
 }
 
+/**
+ * @brief Creates a linearly spaced vector.
+ *
+ * This function generates a vector of \( n \) linearly spaced values between the specified start and end values.
+ *
+ * @param start The starting value of the sequence.
+ * @param end The ending value of the sequence.
+ * @param n The number of values to generate.
+ * @return A vector containing \( n \) linearly spaced values between start and end.
+ *
+ */
 vector<double> create_lin_space(double start, double end, double n)
 {
 	double distance = end - start;
@@ -189,6 +288,17 @@ vector<double> create_lin_space(double start, double end, double n)
 	return lin_space;
 }
 
+/**
+ * @brief Prints a vector as a matrix to the standard output.
+ *
+ * This function prints the elements of a vector to the standard output in a formatted manner.
+ * Each element is separated by a space, and each row is printed on a new line.
+ *
+ * @param matrix The vector to be printed.
+ * @param cols The number of columns in the vector.
+ *
+ * @note The number of elements in the vector must be divisible by the number of columns.
+ */
 void print_matrix(vector<double> matrix, int cols) {
 	cout << "Printing matrix\n";
     int length = matrix.size();
@@ -204,6 +314,15 @@ void print_matrix(vector<double> matrix, int cols) {
 	return;
 }
 
+/**
+ * @brief Prints a vector to the standard output.
+ *
+ * This function prints the elements of a vector to the standard output in a formatted manner.
+ * Each element is separated by a space.
+ *
+ * @param v The vector to be printed.
+ *
+ */
 void print_vector(vector<double> v) {
 	cout << "Printing vector\n";
 		int size = v.size();
@@ -225,7 +344,7 @@ int main(int argc, char* argv[])
     num_processes = size;
 
 	//start main
-	int N = 8; //resolution
+	int N = 256; //resolution
 	int boxsize = 1;
 	int c = 1;
 	double t = 0;
@@ -336,7 +455,7 @@ int main(int argc, char* argv[])
 	}
 
     if(rank == 0) {
-        print_matrix(U, N);
+        //print_matrix(U, N);
     }
     
     MPI_Finalize();
