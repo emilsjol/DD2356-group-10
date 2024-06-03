@@ -1,0 +1,296 @@
+\hypertarget{finite__difference__mpi__v2_8cpp}{}\doxysection{Project/finite\+\_\+difference\+\_\+mpi\+\_\+v2.cpp File Reference}
+\label{finite__difference__mpi__v2_8cpp}\index{Project/finite\_difference\_mpi\_v2.cpp@{Project/finite\_difference\_mpi\_v2.cpp}}
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$mpi.\+h$>$}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+vector$<$ double $>$ \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_ad62b7b15c9009f988d0163b8e4387b77}{matrix\+\_\+add}} (vector$<$ double $>$ \&matrix1, vector$<$ double $>$ \&matrix2)
+\begin{DoxyCompactList}\small\item\em Adds two distributed vectors element-\/wise using MPI. \end{DoxyCompactList}\item 
+vector$<$ double $>$ \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_ae7d1ac1cb1ce26eeef2d0162f252ed5d}{matrix\+\_\+scalar\+\_\+multiply}} (vector$<$ double $>$ \&matrix, double scalar)
+\begin{DoxyCompactList}\small\item\em Multiplies each element of a distributed vector by a scalar using MPI. \end{DoxyCompactList}\item 
+vector$<$ double $>$ \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_a2a18c8ab90287c9f930ba5b3671347f1}{create\+\_\+laplacian}} (vector$<$ double $>$ \&ulx, vector$<$ double $>$ \&uly, vector$<$ double $>$ \&urx, vector$<$ double $>$ \&ury, vector$<$ double $>$ \&u)
+\begin{DoxyCompactList}\small\item\em Creates a Laplacian vector from given vectors. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_a58388ec3701a2a595e8c2c2fe5bc8f7a}{index\+\_\+from\+\_\+two}} (int i, int j, int cols)
+\begin{DoxyCompactList}\small\item\em Computes the linear index from row and column indices in a matrix. \end{DoxyCompactList}\item 
+vector$<$ double $>$ \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_ac79454eb78feae8f6481e17f89953179}{roll}} (vector$<$ double $>$ \&matrix, int shift\+\_\+rows, int shift\+\_\+cols, int rows, int cols, int rank)
+\begin{DoxyCompactList}\small\item\em Rolls the elements of a distributed matrix using MPI by specified row and column shifts. \end{DoxyCompactList}\item 
+vector$<$ double $>$ \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_a0d6cc2dd8a1f5379c756fb0e41f0250a}{create\+\_\+zero\+\_\+matrix}} (int n)
+\begin{DoxyCompactList}\small\item\em Creates a zero-\/filled vector representing a square matrix. \end{DoxyCompactList}\item 
+vector$<$ bool $>$ \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_a44b29b9608db8f38c76f73e675ef59a0}{create\+\_\+bool\+\_\+matrix}} (int n)
+\begin{DoxyCompactList}\small\item\em Creates a boolean vector representing a square matrix. \end{DoxyCompactList}\item 
+vector$<$ double $>$ \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_a6f29fba4d04a73e500035217b7f1fb79}{create\+\_\+lin\+\_\+space}} (double start, double end, double n)
+\begin{DoxyCompactList}\small\item\em Creates a linearly spaced vector. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_a5efc5719c651e35a55b0d335db24ad75}{print\+\_\+matrix}} (vector$<$ double $>$ matrix, int cols)
+\begin{DoxyCompactList}\small\item\em Prints a vector as a matrix to the standard output. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_ab0986e7b7c3e0af149978d9b8bb6bf94}{print\+\_\+vector}} (vector$<$ double $>$ v)
+\begin{DoxyCompactList}\small\item\em Prints a vector to the standard output. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main}} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{finite__difference__mpi__v2_8cpp_abedf026118d01f8df885b54c49720f13}{num\+\_\+processes}} = 0
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_a44b29b9608db8f38c76f73e675ef59a0}\label{finite__difference__mpi__v2_8cpp_a44b29b9608db8f38c76f73e675ef59a0}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!create\_bool\_matrix@{create\_bool\_matrix}}
+\index{create\_bool\_matrix@{create\_bool\_matrix}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{create\_bool\_matrix()}{create\_bool\_matrix()}}
+{\footnotesize\ttfamily vector$<$ bool $>$ create\+\_\+bool\+\_\+matrix (\begin{DoxyParamCaption}\item[{int}]{n }\end{DoxyParamCaption})}
+
+
+
+Creates a boolean vector representing a square matrix. 
+
+This function generates a vector of length ( n \textbackslash{}times n ) representing a square matrix where all elements are initialized to false.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & The size of the square matrix (number of rows and columns). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector representing a square matrix of size ( n \textbackslash{}times n ) filled with false values. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_a2a18c8ab90287c9f930ba5b3671347f1}\label{finite__difference__mpi__v2_8cpp_a2a18c8ab90287c9f930ba5b3671347f1}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!create\_laplacian@{create\_laplacian}}
+\index{create\_laplacian@{create\_laplacian}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{create\_laplacian()}{create\_laplacian()}}
+{\footnotesize\ttfamily vector$<$ double $>$ create\+\_\+laplacian (\begin{DoxyParamCaption}\item[{vector$<$ double $>$ \&}]{ulx,  }\item[{vector$<$ double $>$ \&}]{uly,  }\item[{vector$<$ double $>$ \&}]{urx,  }\item[{vector$<$ double $>$ \&}]{ury,  }\item[{vector$<$ double $>$ \&}]{u }\end{DoxyParamCaption})}
+
+
+
+Creates a Laplacian vector from given vectors. 
+
+This function generates a Laplacian vector using five input vectors by performing a series of vector additions and scalar multiplications.
+
+
+\begin{DoxyParams}{Parameters}
+{\em ulx} & The upper left X-\/component vector. \\
+\hline
+{\em uly} & The upper left Y-\/component vector. \\
+\hline
+{\em urx} & The upper right X-\/component vector. \\
+\hline
+{\em ury} & The upper right Y-\/component vector. \\
+\hline
+{\em u} & The central vector. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector representing the Laplacian of the input vectors. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_a6f29fba4d04a73e500035217b7f1fb79}\label{finite__difference__mpi__v2_8cpp_a6f29fba4d04a73e500035217b7f1fb79}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!create\_lin\_space@{create\_lin\_space}}
+\index{create\_lin\_space@{create\_lin\_space}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{create\_lin\_space()}{create\_lin\_space()}}
+{\footnotesize\ttfamily vector$<$ double $>$ create\+\_\+lin\+\_\+space (\begin{DoxyParamCaption}\item[{double}]{start,  }\item[{double}]{end,  }\item[{double}]{n }\end{DoxyParamCaption})}
+
+
+
+Creates a linearly spaced vector. 
+
+This function generates a vector of ( n ) linearly spaced values between the specified start and end values.
+
+
+\begin{DoxyParams}{Parameters}
+{\em start} & The starting value of the sequence. \\
+\hline
+{\em end} & The ending value of the sequence. \\
+\hline
+{\em n} & The number of values to generate. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector containing ( n ) linearly spaced values between start and end. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_a0d6cc2dd8a1f5379c756fb0e41f0250a}\label{finite__difference__mpi__v2_8cpp_a0d6cc2dd8a1f5379c756fb0e41f0250a}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!create\_zero\_matrix@{create\_zero\_matrix}}
+\index{create\_zero\_matrix@{create\_zero\_matrix}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{create\_zero\_matrix()}{create\_zero\_matrix()}}
+{\footnotesize\ttfamily vector$<$ double $>$ create\+\_\+zero\+\_\+matrix (\begin{DoxyParamCaption}\item[{int}]{n }\end{DoxyParamCaption})}
+
+
+
+Creates a zero-\/filled vector representing a square matrix. 
+
+This function generates a vector of length ( n \textbackslash{}times n ) representing a square matrix where all elements are initialized to zero.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & The size of the square matrix (number of rows and columns). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector representing a square matrix of size ( n \textbackslash{}times n ) filled with zeros. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_a58388ec3701a2a595e8c2c2fe5bc8f7a}\label{finite__difference__mpi__v2_8cpp_a58388ec3701a2a595e8c2c2fe5bc8f7a}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!index\_from\_two@{index\_from\_two}}
+\index{index\_from\_two@{index\_from\_two}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{index\_from\_two()}{index\_from\_two()}}
+{\footnotesize\ttfamily int index\+\_\+from\+\_\+two (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{cols }\end{DoxyParamCaption})}
+
+
+
+Computes the linear index from row and column indices in a matrix. 
+
+This function calculates the linear index corresponding to a given row and column index in a matrix with the specified number of columns.
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The row index. \\
+\hline
+{\em j} & The column index. \\
+\hline
+{\em cols} & The number of columns in the matrix. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The linear index corresponding to the given row and column indices.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+This function assumes that the input row and column indices are within the bounds of the matrix. 
+\end{DoxyNote}
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_a0ddf1224851353fc92bfbff6f499fa97}\label{finite__difference__mpi__v2_8cpp_a0ddf1224851353fc92bfbff6f499fa97}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!main@{main}}
+\index{main@{main}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_ad62b7b15c9009f988d0163b8e4387b77}\label{finite__difference__mpi__v2_8cpp_ad62b7b15c9009f988d0163b8e4387b77}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!matrix\_add@{matrix\_add}}
+\index{matrix\_add@{matrix\_add}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{matrix\_add()}{matrix\_add()}}
+{\footnotesize\ttfamily vector$<$ double $>$ matrix\+\_\+add (\begin{DoxyParamCaption}\item[{vector$<$ double $>$ \&}]{matrix1,  }\item[{vector$<$ double $>$ \&}]{matrix2 }\end{DoxyParamCaption})}
+
+
+
+Adds two distributed vectors element-\/wise using MPI. 
+
+This function takes two distributed vectors of the same length and returns a new vectors where each element is the sum of the corresponding elements in the input vectors. The computation is distributed across MPI processes.
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix1} & The first input vectors. \\
+\hline
+{\em matrix2} & The second input vectors. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector containing the element-\/wise sums of the input vectors, gathered in the root process.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+The number of elements in each vector must be divisible by the number of MPI processes. 
+\end{DoxyNote}
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_ae7d1ac1cb1ce26eeef2d0162f252ed5d}\label{finite__difference__mpi__v2_8cpp_ae7d1ac1cb1ce26eeef2d0162f252ed5d}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!matrix\_scalar\_multiply@{matrix\_scalar\_multiply}}
+\index{matrix\_scalar\_multiply@{matrix\_scalar\_multiply}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{matrix\_scalar\_multiply()}{matrix\_scalar\_multiply()}}
+{\footnotesize\ttfamily vector$<$ double $>$ matrix\+\_\+scalar\+\_\+multiply (\begin{DoxyParamCaption}\item[{vector$<$ double $>$ \&}]{matrix,  }\item[{double}]{scalar }\end{DoxyParamCaption})}
+
+
+
+Multiplies each element of a distributed vector by a scalar using MPI. 
+
+This function takes a distributed vector and a scalar value, and returns a new vector where each element is the product of the corresponding element in the input vector and the scalar. The computation is distributed across MPI processes.
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix} & The input vector. \\
+\hline
+{\em scalar} & The scalar value to multiply each element of the vector by. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector containing the products of the elements of the input matrix and the scalar, gathered in the root process.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+The number of elements in the vectors must be divisible by the number of MPI processes. 
+\end{DoxyNote}
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_a5efc5719c651e35a55b0d335db24ad75}\label{finite__difference__mpi__v2_8cpp_a5efc5719c651e35a55b0d335db24ad75}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!print\_matrix@{print\_matrix}}
+\index{print\_matrix@{print\_matrix}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{print\_matrix()}{print\_matrix()}}
+{\footnotesize\ttfamily void print\+\_\+matrix (\begin{DoxyParamCaption}\item[{vector$<$ double $>$}]{matrix,  }\item[{int}]{cols }\end{DoxyParamCaption})}
+
+
+
+Prints a vector as a matrix to the standard output. 
+
+This function prints the elements of a vector to the standard output in a formatted manner. Each element is separated by a space, and each row is printed on a new line.
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix} & The vector to be printed. \\
+\hline
+{\em cols} & The number of columns in the vector.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+The number of elements in the vector must be divisible by the number of columns. 
+\end{DoxyNote}
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_ab0986e7b7c3e0af149978d9b8bb6bf94}\label{finite__difference__mpi__v2_8cpp_ab0986e7b7c3e0af149978d9b8bb6bf94}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!print\_vector@{print\_vector}}
+\index{print\_vector@{print\_vector}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{print\_vector()}{print\_vector()}}
+{\footnotesize\ttfamily void print\+\_\+vector (\begin{DoxyParamCaption}\item[{vector$<$ double $>$}]{v }\end{DoxyParamCaption})}
+
+
+
+Prints a vector to the standard output. 
+
+This function prints the elements of a vector to the standard output in a formatted manner. Each element is separated by a space.
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The vector to be printed. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_ac79454eb78feae8f6481e17f89953179}\label{finite__difference__mpi__v2_8cpp_ac79454eb78feae8f6481e17f89953179}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!roll@{roll}}
+\index{roll@{roll}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{roll()}{roll()}}
+{\footnotesize\ttfamily vector$<$ double $>$ roll (\begin{DoxyParamCaption}\item[{vector$<$ double $>$ \&}]{matrix,  }\item[{int}]{shift\+\_\+rows,  }\item[{int}]{shift\+\_\+cols,  }\item[{int}]{rows,  }\item[{int}]{cols,  }\item[{int}]{rank }\end{DoxyParamCaption})}
+
+
+
+Rolls the elements of a distributed matrix using MPI by specified row and column shifts. 
+
+This function shifts the elements of a distributed matrix cyclically by the specified number of rows and columns using MPI for communication. The function handles ghost rows or columns as necessary for the rolling operation.
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix} & The input matrix to be rolled. \\
+\hline
+{\em shift\+\_\+rows} & The number of rows to shift the matrix elements. \\
+\hline
+{\em shift\+\_\+cols} & The number of columns to shift the matrix elements. \\
+\hline
+{\em rows} & The total number of rows in the matrix. \\
+\hline
+{\em cols} & The total number of columns in the matrix. \\
+\hline
+{\em rank} & The rank of the current MPI process. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A matrix with elements rolled by the specified row and column shifts, gathered in the root process.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+The number of elements in the matrix must be divisible by the number of MPI processes. 
+\end{DoxyNote}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{finite__difference__mpi__v2_8cpp_abedf026118d01f8df885b54c49720f13}\label{finite__difference__mpi__v2_8cpp_abedf026118d01f8df885b54c49720f13}} 
+\index{finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}!num\_processes@{num\_processes}}
+\index{num\_processes@{num\_processes}!finite\_difference\_mpi\_v2.cpp@{finite\_difference\_mpi\_v2.cpp}}
+\doxysubsubsection{\texorpdfstring{num\_processes}{num\_processes}}
+{\footnotesize\ttfamily int num\+\_\+processes = 0}
+

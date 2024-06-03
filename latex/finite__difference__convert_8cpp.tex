@@ -1,0 +1,222 @@
+\hypertarget{finite__difference__convert_8cpp}{}\doxysection{Project/finite\+\_\+difference\+\_\+convert.cpp File Reference}
+\label{finite__difference__convert_8cpp}\index{Project/finite\_difference\_convert.cpp@{Project/finite\_difference\_convert.cpp}}
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+vector$<$ vector$<$ double $>$ $>$ \mbox{\hyperlink{finite__difference__convert_8cpp_a3d81cacd2c6244d4f2fdb7dc256d3ba3}{matrix\+\_\+add}} (vector$<$ vector$<$ double $>$ $>$ \&matrix1, vector$<$ vector$<$ double $>$ $>$ \&matrix2)
+\begin{DoxyCompactList}\small\item\em Adds two matrices element-\/wise. \end{DoxyCompactList}\item 
+vector$<$ vector$<$ double $>$ $>$ \mbox{\hyperlink{finite__difference__convert_8cpp_a73f8ba12f24854543e923873d8f2bfac}{matrix\+\_\+scalar\+\_\+multiply}} (vector$<$ vector$<$ double $>$ $>$ \&matrix, double scalar)
+\begin{DoxyCompactList}\small\item\em Multiplies each element of a matrix by a scalar. \end{DoxyCompactList}\item 
+vector$<$ vector$<$ double $>$ $>$ \mbox{\hyperlink{finite__difference__convert_8cpp_a4a43f5af167ead60df209accee0fef96}{create\+\_\+laplacian}} (vector$<$ vector$<$ double $>$ $>$ \&ulx, vector$<$ vector$<$ double $>$ $>$ \&uly, vector$<$ vector$<$ double $>$ $>$ \&urx, vector$<$ vector$<$ double $>$ $>$ \&ury, vector$<$ vector$<$ double $>$ $>$ \&u)
+\begin{DoxyCompactList}\small\item\em Creates a Laplacian matrix from given matrices. \end{DoxyCompactList}\item 
+vector$<$ vector$<$ double $>$ $>$ \mbox{\hyperlink{finite__difference__convert_8cpp_ae5614f9a357bb17c95897615bfff6762}{roll}} (vector$<$ vector$<$ double $>$ $>$ \&matrix, int shift\+\_\+rows, int shift\+\_\+cols)
+\begin{DoxyCompactList}\small\item\em Rolls the elements of a matrix by specified row and column shifts. \end{DoxyCompactList}\item 
+vector$<$ vector$<$ double $>$ $>$ \mbox{\hyperlink{finite__difference__convert_8cpp_a7e251b0e2a4929b82f27fff8974b82d7}{create\+\_\+zero\+\_\+matrix}} (int n)
+\begin{DoxyCompactList}\small\item\em Creates a zero matrix from given size. \end{DoxyCompactList}\item 
+vector$<$ vector$<$ bool $>$ $>$ \mbox{\hyperlink{finite__difference__convert_8cpp_a2940cae87e2bc27d4fdfa5d3e30d6005}{create\+\_\+bool\+\_\+matrix}} (int n)
+\begin{DoxyCompactList}\small\item\em Creates an ( n \textbackslash{}times n ) matrix filled with booleans. \end{DoxyCompactList}\item 
+vector$<$ double $>$ \mbox{\hyperlink{finite__difference__convert_8cpp_a6f29fba4d04a73e500035217b7f1fb79}{create\+\_\+lin\+\_\+space}} (double start, double end, double n)
+\begin{DoxyCompactList}\small\item\em Creates a linearly spaced vector. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{finite__difference__convert_8cpp_ac452c5d1e893edbf8c93e54861d25b64}{print\+\_\+matrix}} (vector$<$ vector$<$ double $>$ $>$ matrix)
+\begin{DoxyCompactList}\small\item\em Prints a square matrix to the standard output. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{finite__difference__convert_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}{main}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{finite__difference__convert_8cpp_a2940cae87e2bc27d4fdfa5d3e30d6005}\label{finite__difference__convert_8cpp_a2940cae87e2bc27d4fdfa5d3e30d6005}} 
+\index{finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}!create\_bool\_matrix@{create\_bool\_matrix}}
+\index{create\_bool\_matrix@{create\_bool\_matrix}!finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}}
+\doxysubsubsection{\texorpdfstring{create\_bool\_matrix()}{create\_bool\_matrix()}}
+{\footnotesize\ttfamily vector$<$ vector$<$ bool $>$ $>$ create\+\_\+bool\+\_\+matrix (\begin{DoxyParamCaption}\item[{int}]{n }\end{DoxyParamCaption})}
+
+
+
+Creates an ( n \textbackslash{}times n ) matrix filled with booleans. 
+
+This function generates a square matrix of size ( n \textbackslash{}times n ) where all elements are initialized to false.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & The size of the matrix (number of rows and columns). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A square boolean matrix of size ( n \textbackslash{}times n ) filled with false.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+This function assumes that the input size ( n ) is non-\/negative. 
+\end{DoxyNote}
+\mbox{\Hypertarget{finite__difference__convert_8cpp_a4a43f5af167ead60df209accee0fef96}\label{finite__difference__convert_8cpp_a4a43f5af167ead60df209accee0fef96}} 
+\index{finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}!create\_laplacian@{create\_laplacian}}
+\index{create\_laplacian@{create\_laplacian}!finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}}
+\doxysubsubsection{\texorpdfstring{create\_laplacian()}{create\_laplacian()}}
+{\footnotesize\ttfamily vector$<$ vector$<$ double $>$ $>$ create\+\_\+laplacian (\begin{DoxyParamCaption}\item[{vector$<$ vector$<$ double $>$ $>$ \&}]{ulx,  }\item[{vector$<$ vector$<$ double $>$ $>$ \&}]{uly,  }\item[{vector$<$ vector$<$ double $>$ $>$ \&}]{urx,  }\item[{vector$<$ vector$<$ double $>$ $>$ \&}]{ury,  }\item[{vector$<$ vector$<$ double $>$ $>$ \&}]{u }\end{DoxyParamCaption})}
+
+
+
+Creates a Laplacian matrix from given matrices. 
+
+This function generates a Laplacian matrix using five input matrices by performing a series of matrix additions and scalar multiplications.
+
+
+\begin{DoxyParams}{Parameters}
+{\em ulx} & The upper left X-\/component matrix. \\
+\hline
+{\em uly} & The upper left Y-\/component matrix. \\
+\hline
+{\em urx} & The upper right X-\/component matrix. \\
+\hline
+{\em ury} & The upper right Y-\/component matrix. \\
+\hline
+{\em u} & The central matrix. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A matrix representing the Laplacian of the input matrices. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{finite__difference__convert_8cpp_a6f29fba4d04a73e500035217b7f1fb79}\label{finite__difference__convert_8cpp_a6f29fba4d04a73e500035217b7f1fb79}} 
+\index{finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}!create\_lin\_space@{create\_lin\_space}}
+\index{create\_lin\_space@{create\_lin\_space}!finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}}
+\doxysubsubsection{\texorpdfstring{create\_lin\_space()}{create\_lin\_space()}}
+{\footnotesize\ttfamily vector$<$ double $>$ create\+\_\+lin\+\_\+space (\begin{DoxyParamCaption}\item[{double}]{start,  }\item[{double}]{end,  }\item[{double}]{n }\end{DoxyParamCaption})}
+
+
+
+Creates a linearly spaced vector. 
+
+This function generates a vector of ( n ) linearly spaced values between the specified start and end values.
+
+
+\begin{DoxyParams}{Parameters}
+{\em start} & The starting value of the sequence. \\
+\hline
+{\em end} & The ending value of the sequence. \\
+\hline
+{\em n} & The number of values to generate. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector containing ( n ) linearly spaced values between start and end.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+This function assumes that ( n ) is a positive integer. 
+\end{DoxyNote}
+\mbox{\Hypertarget{finite__difference__convert_8cpp_a7e251b0e2a4929b82f27fff8974b82d7}\label{finite__difference__convert_8cpp_a7e251b0e2a4929b82f27fff8974b82d7}} 
+\index{finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}!create\_zero\_matrix@{create\_zero\_matrix}}
+\index{create\_zero\_matrix@{create\_zero\_matrix}!finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}}
+\doxysubsubsection{\texorpdfstring{create\_zero\_matrix()}{create\_zero\_matrix()}}
+{\footnotesize\ttfamily vector$<$ vector$<$ double $>$ $>$ create\+\_\+zero\+\_\+matrix (\begin{DoxyParamCaption}\item[{int}]{n }\end{DoxyParamCaption})}
+
+
+
+Creates a zero matrix from given size. 
+
+This function generates a zero matrix using an input size N, returning a N$\ast$N zero matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & The size of the rows and columns of the zero matrix. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A zero matrix of the provided size. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{finite__difference__convert_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}\label{finite__difference__convert_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}} 
+\index{finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}!main@{main}}
+\index{main@{main}!finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{finite__difference__convert_8cpp_a3d81cacd2c6244d4f2fdb7dc256d3ba3}\label{finite__difference__convert_8cpp_a3d81cacd2c6244d4f2fdb7dc256d3ba3}} 
+\index{finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}!matrix\_add@{matrix\_add}}
+\index{matrix\_add@{matrix\_add}!finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}}
+\doxysubsubsection{\texorpdfstring{matrix\_add()}{matrix\_add()}}
+{\footnotesize\ttfamily vector$<$ vector$<$ double $>$ $>$ matrix\+\_\+add (\begin{DoxyParamCaption}\item[{vector$<$ vector$<$ double $>$ $>$ \&}]{matrix1,  }\item[{vector$<$ vector$<$ double $>$ $>$ \&}]{matrix2 }\end{DoxyParamCaption})}
+
+
+
+Adds two matrices element-\/wise. 
+
+This function takes two matrices of the same dimensions and returns a new matrix where each element is the sum of the corresponding elements in the input matrices.
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix1} & The first input matrix. \\
+\hline
+{\em matrix2} & The second input matrix. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A matrix containing the element-\/wise sums of the input matrices.
+\end{DoxyReturn}
+\begin{DoxyPrecond}{Precondition}
+Both matrices must have the same dimensions. 
+\end{DoxyPrecond}
+\mbox{\Hypertarget{finite__difference__convert_8cpp_a73f8ba12f24854543e923873d8f2bfac}\label{finite__difference__convert_8cpp_a73f8ba12f24854543e923873d8f2bfac}} 
+\index{finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}!matrix\_scalar\_multiply@{matrix\_scalar\_multiply}}
+\index{matrix\_scalar\_multiply@{matrix\_scalar\_multiply}!finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}}
+\doxysubsubsection{\texorpdfstring{matrix\_scalar\_multiply()}{matrix\_scalar\_multiply()}}
+{\footnotesize\ttfamily vector$<$ vector$<$ double $>$ $>$ matrix\+\_\+scalar\+\_\+multiply (\begin{DoxyParamCaption}\item[{vector$<$ vector$<$ double $>$ $>$ \&}]{matrix,  }\item[{double}]{scalar }\end{DoxyParamCaption})}
+
+
+
+Multiplies each element of a matrix by a scalar. 
+
+This function takes a matrix and a scalar value, returning a new matrix where each element is the product of the corresponding element in the input matrix and the scalar value.
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix} & The input matrix. \\
+\hline
+{\em scalar} & The scalar value to multiply each element of the matrix by. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A matrix containing the products of the elements of the input matrix and the scalar. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{finite__difference__convert_8cpp_ac452c5d1e893edbf8c93e54861d25b64}\label{finite__difference__convert_8cpp_ac452c5d1e893edbf8c93e54861d25b64}} 
+\index{finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}!print\_matrix@{print\_matrix}}
+\index{print\_matrix@{print\_matrix}!finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}}
+\doxysubsubsection{\texorpdfstring{print\_matrix()}{print\_matrix()}}
+{\footnotesize\ttfamily void print\+\_\+matrix (\begin{DoxyParamCaption}\item[{vector$<$ vector$<$ double $>$ $>$}]{matrix }\end{DoxyParamCaption})}
+
+
+
+Prints a square matrix to the standard output. 
+
+This function prints the elements of a square matrix to the standard output in a formatted manner. Each element is separated by a space and each row is printed on a new line.
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix} & The square matrix to be printed. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{finite__difference__convert_8cpp_ae5614f9a357bb17c95897615bfff6762}\label{finite__difference__convert_8cpp_ae5614f9a357bb17c95897615bfff6762}} 
+\index{finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}!roll@{roll}}
+\index{roll@{roll}!finite\_difference\_convert.cpp@{finite\_difference\_convert.cpp}}
+\doxysubsubsection{\texorpdfstring{roll()}{roll()}}
+{\footnotesize\ttfamily vector$<$ vector$<$ double $>$ $>$ roll (\begin{DoxyParamCaption}\item[{vector$<$ vector$<$ double $>$ $>$ \&}]{matrix,  }\item[{int}]{shift\+\_\+rows,  }\item[{int}]{shift\+\_\+cols }\end{DoxyParamCaption})}
+
+
+
+Rolls the elements of a matrix by specified row and column shifts. 
+
+This function shifts the elements of the input matrix cyclically by the specified number of rows and columns, wrapping around the edges.
+
+
+\begin{DoxyParams}{Parameters}
+{\em matrix} & The input matrix to be rolled. \\
+\hline
+{\em shift\+\_\+rows} & The number of rows to shift the matrix elements. \\
+\hline
+{\em shift\+\_\+cols} & The number of columns to shift the matrix elements. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A matrix with elements rolled by the specified row and column shifts. 
+\end{DoxyReturn}
