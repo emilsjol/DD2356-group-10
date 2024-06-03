@@ -4,6 +4,19 @@
 #include <math.h>
 using namespace std;
 
+/**
+ * @brief Adds two matrices element-wise.
+ *
+ * This function takes two matrices of the same dimensions and returns a new matrix where each element
+ * is the sum of the corresponding elements in the input matrices.
+ *
+ * @param matrix1 The first input matrix.
+ * @param matrix2 The second input matrix.
+ * @return A matrix containing the element-wise sums of the input matrices.
+ *
+ * @pre Both matrices must have the same dimensions.
+ *
+ */
 vector<vector<double>> matrix_add(vector<vector<double>> &matrix1, vector<vector<double>> &matrix2)
 {
 	int rows = matrix1.size();
@@ -19,6 +32,17 @@ vector<vector<double>> matrix_add(vector<vector<double>> &matrix1, vector<vector
 	return temp;
 }
 
+/**
+ * @brief Multiplies each element of a matrix by a scalar.
+ *
+ * This function takes a matrix and a scalar value, returning a new matrix where each element
+ * is the product of the corresponding element in the input matrix and the scalar value.
+ *
+ * @param matrix The input matrix.
+ * @param scalar The scalar value to multiply each element of the matrix by.
+ * @return A matrix containing the products of the elements of the input matrix and the scalar.
+ *
+ */
 vector<vector<double>> matrix_scalar_multiply(vector<vector<double>> &matrix, double scalar)
 {
 	int rows = matrix.size();
@@ -33,7 +57,21 @@ vector<vector<double>> matrix_scalar_multiply(vector<vector<double>> &matrix, do
 	}
 	return temp;
 }
-// vector<vector<double> > laplacian = create_laplacian(ULX, ULY, URX, URY, U);
+
+/**
+ * @brief Creates a Laplacian matrix from given matrices.
+ *
+ * This function generates a Laplacian matrix using five input matrices by performing
+ * a series of matrix additions and scalar multiplications.
+ *
+ * @param ulx The upper left X-component matrix.
+ * @param uly The upper left Y-component matrix.
+ * @param urx The upper right X-component matrix.
+ * @param ury The upper right Y-component matrix.
+ * @param u The central matrix.
+ * @return A matrix representing the Laplacian of the input matrices.
+ *
+ */
 vector<vector<double>> create_laplacian(vector<vector<double>> &ulx, vector<vector<double>> &uly,
 										vector<vector<double>> &urx, vector<vector<double>> &ury, vector<vector<double>> &u)
 {
@@ -50,6 +88,18 @@ vector<vector<double>> create_laplacian(vector<vector<double>> &ulx, vector<vect
 	return result;
 }
 
+/**
+ * @brief Rolls the elements of a matrix by specified row and column shifts.
+ *
+ * This function shifts the elements of the input matrix cyclically by the specified number
+ * of rows and columns, wrapping around the edges.
+ *
+ * @param matrix The input matrix to be rolled.
+ * @param shift_rows The number of rows to shift the matrix elements.
+ * @param shift_cols The number of columns to shift the matrix elements.
+ * @return A matrix with elements rolled by the specified row and column shifts.
+ *
+ */
 vector<vector<double>> roll(vector<vector<double>> &matrix, int shift_rows, int shift_cols)
 {
 	int rows = matrix.size();
@@ -76,18 +126,49 @@ vector<vector<double>> roll(vector<vector<double>> &matrix, int shift_rows, int 
 	return temp;
 }
 
+/**
+ * @brief Creates a zero matrix from given size.
+ *
+ * This function generates a zero matrix using an input size N, returning a N*N zero matrix.
+ *
+ * @param n The size of the rows and columns of the zero matrix.
+ * @return A zero matrix of the provided size.
+ *
+ */
 vector<vector<double>> create_zero_matrix(int n)
 {
 	vector<vector<double>> zero_matrix(n, vector<double>(n));
 	return zero_matrix;
 }
 
+/**
+ * @brief Creates an \( n \times n \) matrix filled with booleans.
+ *
+ * This function generates a square matrix of size \( n \times n \) where all elements are initialized to false.
+ *
+ * @param n The size of the matrix (number of rows and columns).
+ * @return A square boolean matrix of size \( n \times n \) filled with false.
+ *
+ * @note This function assumes that the input size \( n \) is non-negative.
+ */
 vector<vector<bool>> create_bool_matrix(int n)
 {
 	vector<vector<bool>> bool_matrix(n, vector<bool>(n));
 	return bool_matrix;
 }
 
+/**
+ * @brief Creates a linearly spaced vector.
+ *
+ * This function generates a vector of \( n \) linearly spaced values between the specified start and end values.
+ *
+ * @param start The starting value of the sequence.
+ * @param end The ending value of the sequence.
+ * @param n The number of values to generate.
+ * @return A vector containing \( n \) linearly spaced values between start and end.
+ *
+ * @note This function assumes that \( n \) is a positive integer.
+ */
 vector<double> create_lin_space(double start, double end, double n)
 {
 	double distance = end - start;
@@ -100,6 +181,15 @@ vector<double> create_lin_space(double start, double end, double n)
 	return lin_space;
 }
 
+/**
+ * @brief Prints a square matrix to the standard output.
+ *
+ * This function prints the elements of a square matrix to the standard output in a formatted manner.
+ * Each element is separated by a space and each row is printed on a new line.
+ *
+ * @param matrix The square matrix to be printed.
+ *
+ */
 void print_matrix(vector<vector<double>> matrix)
 {
 	int size = matrix.size();
